@@ -28,12 +28,43 @@ tap.test("TurboVoteAPI", (t) => {
 
   // Set the TURBOVOTE_API_ENDPOINT environment variable for testing
   process.env.TURBOVOTE_API_ENDPOINT =
-    "https://api.turbovote.org/elections/upcoming?district-divisions=ocd-division";
+    "https://fakeapi.example.com/elections/upcoming";
   t.equal(
     turboVoteAPI.getUrl(),
-    "https://api.turbovote.org/elections/upcoming?district-divisions=ocd-division/country:us/state:ny/place:new_york",
+    "https://fakeapi.example.com/elections/upcoming/country:us/state:ny/place:new_york",
     "getUrl returns the correct value"
   );
 
+  t.end();
+});
+
+tap.test("TurboVoteAPI.getOcdId - with city", (t) => {
+  const req = {
+    body: {
+      city: "Test City",
+      state: "TX",
+    },
+  };
+  const turboVoteAPI = new TurboVoteAPI(req);
+  const ocdId = turboVoteAPI.getOcdId();
+
+  t.equal(
+    ocdId,
+    "/country:us/state:tx/place:test_city",
+    "OCD ID is correct with city"
+  );
+  t.end();
+});
+
+tap.test("TurboVoteAPI.getOcdId - without city", (t) => {
+  const req = {
+    body: {
+      state: "TX",
+    },
+  };
+  const turboVoteAPI = new TurboVoteAPI(req);
+  const ocdId = turboVoteAPI.getOcdId();
+
+  t.equal(ocdId, "/country:us/state:tx", "OCD ID is correct without city");
   t.end();
 });

@@ -20,6 +20,7 @@ const mockRes = {
 
 // Using a fake URL for testing purposes
 const fakeUrl = "https://fakeapi.example.com/elections/upcoming";
+const mockTemplate = "testTemplate";
 const mockTitle = "Test Title";
 
 tap.test("FetchData.fetchData - failure", async (t) => {
@@ -30,7 +31,7 @@ tap.test("FetchData.fetchData - failure", async (t) => {
   };
   global.fetch.resolves(mockResponse);
 
-  const fetchData = new FetchData(fakeUrl, mockTitle, mockRes);
+  const fetchData = new FetchData(fakeUrl, mockTemplate, mockTitle, mockRes);
   await fetchData.fetchData();
 
   // Assertions to check if fetch was called correctly
@@ -49,6 +50,7 @@ tap.test("FetchData.fetchData - failure", async (t) => {
   t.ok(
     mockRes.render.calledWith("error", {
       message: "Not Found",
+      error: { status: undefined, stack: undefined },
     }),
     "res.render was called with the correct arguments"
   );
@@ -65,7 +67,7 @@ tap.test("FetchData.fetchData - success", async (t) => {
   };
   global.fetch.resolves(mockResponse);
 
-  const fetchData = new FetchData(fakeUrl, mockTitle, mockRes);
+  const fetchData = new FetchData(fakeUrl, mockTemplate, mockTitle, mockRes);
   await fetchData.fetchData();
 
   // Assertions to check if fetch was called correctly
