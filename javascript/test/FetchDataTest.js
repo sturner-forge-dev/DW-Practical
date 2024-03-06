@@ -1,7 +1,6 @@
-// Importing required libraries and classes
-const tap = require("tap");
-const sinon = require("sinon");
-const FetchData = require("../classes/FetchData");
+var tap = require("tap");
+var sinon = require("sinon");
+var FetchData = require("../classes/FetchData");
 
 // Stubbing the global fetch function before all tests
 tap.beforeEach(() => {
@@ -58,9 +57,8 @@ tap.test("FetchData.fetchData - failure", async (t) => {
   mockRes.render.reset();
 });
 
-tap.test("FetchData.fetchData - success", async (t) => {
-  // Set up the fetch stub to return a mock successful response
-  const mockData = { someKey: "someValue" }; // Adjust to match expected format
+tap.test("FetchData.fetchData - no data", async (t) => {
+  const mockData = [];
   const mockResponse = {
     ok: true,
     json: () => Promise.resolve(mockData),
@@ -70,7 +68,40 @@ tap.test("FetchData.fetchData - success", async (t) => {
   const fetchData = new FetchData(fakeUrl, mockTemplate, mockTitle, mockRes);
   await fetchData.fetchData();
 
-  // Assertions to check if fetch was called correctly
+  t.ok(global.fetch.calledOnce, "fetch was called once");
+  t.ok(
+    global.fetch.calledWith(fakeUrl, {
+      headers: {
+        Accept: "application/json",
+      },
+    }),
+    "fetch was called with the correct arguments"
+  );
+
+  t.ok(mockRes.render.calledOnce, "res.render was called once");
+  t.ok(
+    mockRes.render.calledWith("error", {
+      message:
+        "No election data found for given location. Please enter a different location.",
+    }),
+    "res.render was called with the correct arguments"
+  );
+
+  mockRes.render.reset();
+});
+
+tap.test("FetchData.fetchData - success", async (t) => {
+  // Set up the fetch stub to return a mock successful response
+  const mockData = { someKey: "someValue" };
+  const mockResponse = {
+    ok: true,
+    json: () => Promise.resolve(mockData),
+  };
+  global.fetch.resolves(mockResponse);
+
+  const fetchData = new FetchData(fakeUrl, mockTemplate, mockTitle, mockRes);
+  await fetchData.fetchData();
+
   t.ok(
     global.fetch.calledWith(fakeUrl, {
       headers: {
@@ -80,9 +111,9 @@ tap.test("FetchData.fetchData - success", async (t) => {
     "fetch was called with the correct URL and headers"
   );
 
-  // Assertions to check if res.render was called correctly for success
   t.same(
-    mockRes.render.firstCall.args[1], // Access the arguments of the first call
+    // Access the arguments of the first call to res.render
+    mockRes.render.firstCall.args[1],
     {
       title: mockTitle,
       data: mockData,

@@ -73,3 +73,8 @@ button {
 .centered-subsection h3 {
   text-align: center;
 }
+
+.info-block {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}

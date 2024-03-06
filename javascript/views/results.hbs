@@ -3,14 +3,14 @@
   <h1>{{description}}</h1>
   <a href="{{website}}">{{website}}</a>
   <p>Date: {{formatDate date}}</p>
-  <p>Type: {{capitalizeFirstLetters type}}</p>
+  <p>Election Type: {{capitalizeFirstLetters type}}</p>
   {{#each district-divisions}}
-    <p>Voter Registration Authority Level:
+    <p>Voter Registration Authority:
       {{capitalizeFirstLetters
         (lookup this "voter-registration-authority-level")
       }}
     </p>
-    <p>Election Authority Level:
+    <p>Election Authority:
       {{capitalizeFirstLetters (lookup this "election-authority-level")}}
     </p>
 </div>
@@ -18,30 +18,56 @@
   <h2 class="centered-header">Voting Methods:</h3>
     <div class="centered-subsection">
       {{#each this.voting-methods}}
+
+        {{!-- Early Voting Block --}}
         {{#isEqual type "early-voting"}}
           <h3>Early Voting</h1>
             <p>Early Voting Begins: {{formatDate this.start}}</p>
             <p>Early Voting Ends: {{formatDate this.end}}</p>
-            <p>Can Early Vote in Primary: {{this.primary}}</p>
+            <p>Can Early Vote in Primary: {{boolToYesNo this.primary}}</p>
             <p>Excuse Required: {{boolToYesNo (lookup this "excuse-required")}}</p>
             {{#if this.instructions}}
-              <p>Instructions: {{lookup this.instructions "voting-id"}}</p>
+              <p>Additional Information: 
+                <div class="info-block">
+                  {{#each this.instructions}}
+                    <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
+                  {{/each}}
+                </p>
+              </div>
             {{/if}}
-            <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+            {{#if this.url}}
+              <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+            {{/if}}
         {{/isEqual}}
+
+        {{!-- In Person Block --}}
         {{#isEqual type "in-person"}}
           <h3>In-Person Voting</h1>
             <p>Can Vote in Primary: {{boolToYesNo this.primary}}</p>
             {{#if this.instructions}}
-              <p>Instructions: {{lookup this.instructions "voting-id"}}</p>
+              <p>Additional Information: 
+                <div class="info-block">
+                  {{#each this.instructions}}
+                    <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
+                  {{/each}}
+                </p>
+              </div>
             {{/if}}
         {{/isEqual}}
+
+        {{!-- Mail-In Block --}}
         {{#isEqual type "by-mail"}}
           <h3>Voting By Mail</h1>
             <p>Can Vote in Primary: {{boolToYesNo this.primary}}</p>
             <p>Excuse Required: {{boolToYesNo (lookup this "excuse-required")}}</p>
             {{#if this.instructions}}
-              <p>Instructions: {{lookup this.instructions "voting-id"}}</p>
+              <p>Additional Information: 
+                <div class="info-block">
+                  {{#each this.instructions}}
+                    <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
+                  {{/each}}
+                </p>
+              </div>
             {{/if}}
         {{/isEqual}}
       {{/each}}
@@ -50,33 +76,74 @@
   <h2 class="centered-header">Voter Registration Methods:</h3>
     <div class="centered-subsection">
       {{#each this.voter-registration-methods}}
+
+        {{!-- In-Person Block --}}
         {{#isEqual type "in-person"}}
           <h3>In-Person Registration</h1>
             <p>Registration Deadline: {{formatDate this.end}}</p>
-            <p>Can Register in Primary: {{this.primary}}</p>
-            <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+            {{#if this.primary}}
+              <p>Can Register in Primary: {{this.primary}}</p>
+            {{/if}}
+            {{#if this.instructions}}
+              <p>Additional Information: 
+                <div class="info-block">
+                  {{#each this.instructions}}
+                    <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
+                  {{/each}}
+                </p>
+              </div>
+            {{/if}}
+            {{#if this.url}}
+              <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+            {{/if}}
         {{/isEqual}}
+        
+        {{!-- Mail-In Block --}}
         {{#isEqual type "by-mail"}}
           <h3>By-Mail Registration</h1>
             <p>Postmarked Deadline: {{formatDate (lookup this "deadline-postmarked")}}</p>
-            <p>Can Register in Primary: {{this.primary}}</p>
-            <p>Instructions: 
-              {{#each this.instructions}}
-                <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
-              {{/each}}
-            </p>
-            <p>Register Here: <a href="{{this.registration-form-url}}">{{this.registration-form-url}}</a></p>
+            {{#if this.primary}}
+              <p>Can Register in Primary: {{this.primary}}</p>
+            {{/if}}
+            {{#if this.url}}
+              <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+            {{/if}}
+            {{#if this.instructions}}
+              <p>Additional Information: 
+                <div class="info-block">
+                  {{#each this.instructions}}
+                    <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
+                  {{/each}}
+                </p>
+              </div>
+            {{/if}}
+            {{#if this.registration-form-url}}
+              <p>Register Here: <a href="{{this.registration-form-url}}">{{this.registration-form-url}}</a></p>
+            {{/if}}
         {{/isEqual}}
+
+        {{!-- Online Block --}}
         {{#isEqual type "online"}}
           <h3>Online Registration</h1>
             <p>Registration Deadline: {{formatDate (lookup this "deadline-online")}}</p>
-            <p>Can Register in Primary: {{this.primary}}</p>
-            <p>Instructions: 
-              {{#each this.instructions}}
-                <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
-              {{/each}}
-            </p>
-            <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+            {{#if this.primary}}
+              <p>Can Register in Primary: {{this.primary}}</p>
+            {{/if}}
+            {{#if this.url}}
+              <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+            {{/if}}
+            {{#if this.instructions}}
+              <p>Additional Information: 
+                <div class="info-block">
+                  {{#each this.instructions}}
+                    <p><b>{{capitalizeFirstLetters @key}}:</b> {{{this}}}</p>
+                  {{/each}}
+                </p>
+              </div>
+            {{/if}}
+            {{#if this.registration-form-url}}
+              <p>Register Here: <a href="{{this.registration-form-url}}">{{this.registration-form-url}}</a></p>
+            {{/if}}
         {{/isEqual}}
       {{/each}}
     </div>
