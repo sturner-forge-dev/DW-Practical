@@ -1,0 +1,81 @@
+{{#each data}}
+<div class="centered-section">
+  <h1>{{description}}</h1>
+  <a href="{{website}}">{{website}}</a>
+  <p>Date: {{formatDate date}}</p>
+  <p>Type: {{capitalizeFirstLetters type}}</p>
+  {{#each district-divisions}}
+    <p>Voter Registration Authority Level:
+      {{capitalizeFirstLetters
+        (lookup this "voter-registration-authority-level")
+      }}
+    </p>
+    <p>Election Authority Level:
+      {{capitalizeFirstLetters (lookup this "election-authority-level")}}
+    </p>
+</div>
+
+    <h2 class="centered-header">Voting Methods:</h3>
+    <div class="centered-subsection">
+    {{#each this.voting-methods}}
+      {{#isEqual type "early-voting"}}
+        <h1>Early Voting:</h1>
+        <p>Early Voting Begins: {{this.start}}</p>
+        <p>Early Voting Ends: {{this.end}}</p>
+        <p>Can Early Vote in Primary: {{this.primary}}</p>
+        <p>Excuse Required: {{lookup this "excuse-required"}}</p>
+        <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+      {{/isEqual}}
+      {{#isEqual type "in-person"}}
+        <h1>In-Person Voting:</h1>
+        <p>Can Vote in Primary: {{boolToYesNo this.primary}}</p>
+        {{#if this.instructions}}
+          <p>Instructions:</p>
+          <p>{{lookup this.instructions "voting-id"}}</p>
+        {{/if}}
+      {{/isEqual}}
+      {{#isEqual type "by-mail"}}
+        <h3>Voting By Mail</h1>
+        <p>Can Vote in Primary: {{boolToYesNo this.primary}}</p>
+        <p>Excuse Required: {{boolToYesNo (lookup this "excuse-required")}}</p>
+        {{#if this.instructions}}
+          <p>Instructions:</p>
+          <p>{{lookup this.instructions "voting-id"}}</p>
+        {{/if}}
+      {{/isEqual}}
+    {{/each}}
+    </div>
+
+    <h2 class="centered-header">Voter Registration Methods:</h3>
+    <div class="centered-subsection">
+    {{#each this.voter-registration-methods}}
+      {{#isEqual type "in-person"}}
+        <h3>In-Person Registration:</h1>
+        <p>Registration Deadline: {{formatDate this.end}}</p>
+        <p>Can Register in Primary: {{this.primary}}</p>
+        <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+      {{/isEqual}}
+      {{#isEqual type "by-mail"}}
+        <h3>By-Mail Registration:</h1>
+        <p>Postmarked Deadline: {{formatDate (lookup this "deadline-postmarked")}}</p>
+        <p>Can Register in Primary: {{this.primary}}</p>
+        <p>Instructions: </p>
+        {{#each this.instructions}}
+          <p>{{capitalizeFirstLetters @key}}: {{{this}}}</p>
+        {{/each}}
+        <p>Register Here: <a href="{{this.registration-form-url}}">{{this.registration-form-url}}</a></p>
+      {{/isEqual}}
+      {{#isEqual type "online"}}
+        <h3>Online Registration:</h1>
+         <p>Registration Deadline: {{formatDate (lookup this "deadline-online")}}</p>
+        <p>Can Register in Primary: {{this.primary}}</p>
+        <p>Instructions: </p>
+        {{#each this.instructions}}
+          <p>{{capitalizeFirstLetters @key}}: {{{this}}}</p>
+        {{/each}}
+        <p>More Info: <a href="{{this.url}}">{{this.url}}</a></p>
+      {{/isEqual}}
+    {{/each}}
+    </div>
+  {{/each}}
+{{/each}}
