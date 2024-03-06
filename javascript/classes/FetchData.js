@@ -1,7 +1,8 @@
 class FetchData {
-  constructor(url, title, res) {
+  constructor(url, template, pageTitle, res) {
     this.url = url;
-    this.title = title;
+    this.template = template;
+    this.pageTitle = pageTitle;
     this.res = res;
   }
 
@@ -14,13 +15,14 @@ class FetchData {
 
     if (response.ok) {
       const data = await response.json();
-      this.res.render("results", {
-        title: this.title,
+      this.res.render(this.template, {
+        title: this.pageTitle,
         data: data,
       });
     } else {
       this.res.render("error", {
         message: response.statusText,
+        error: { status: response.status, stack: response.stack },
       });
     }
   }

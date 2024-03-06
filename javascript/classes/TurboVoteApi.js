@@ -15,7 +15,11 @@ class TurboVoteAPI {
   }
 
   getOcdId() {
-    return `/country:us/state:${this.getFormattedState()}/place:${this.getFormattedCity()}`;
+    let ocdId = `/country:us/state:${this.getFormattedState()}`;
+    if (this.city) {
+      ocdId += `/place:${this.getFormattedCity()}`;
+    }
+    return ocdId;
   }
 
   getUrl() {

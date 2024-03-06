@@ -14,7 +14,12 @@ router.get("/", function (req, res, next) {
 
 router.post("/search", function (req, res, next) {
   const api = new TurboVoteAPI(req);
-  const fetchData = new FetchData(api.getUrl(), "Find My Election", res);
+  const fetchData = new FetchData(
+    api.getUrl(),
+    "results",
+    "Find My Elections",
+    res
+  );
 
   fetchData.fetchData();
 });
